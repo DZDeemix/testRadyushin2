@@ -1,8 +1,7 @@
 <?php
-
 require_once __DIR__ . '/vendor/autoload.php';
 
-$library = new App\Library();
+$library = new App\Controllers\Library();
 if (method_exists($library, $argv[1])) {
     $param = null;
     if (!empty($argv[2])) {
