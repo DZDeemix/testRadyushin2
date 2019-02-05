@@ -14,6 +14,7 @@
 namespace App;
 
 use App\Config;
+use PDO;
 
 
 /**
@@ -49,13 +50,17 @@ class ConnectionDb
     {
         $config = $this->_config->getConfig();
 
-        $dsn = 'myssql:host=' . $config['host'] . ';dbname=' . $config['db'] . ';charset=' . $config['charset'];
-        $this->_db = new PDO (
-            $dsn,
-            $config['user'],
-            $config['password']
-        ) or die('Ошибка соединения с БД');
+        $dsn = 'mysql:host=' . $config['host'] . ';dbname=' . $config['db'] . ';charset=' . $config['charset'];
 
+        try {
+            $this->_db = new PDO (
+                $dsn,
+                $config['user'],
+                $config['password']
+            );
+        } catch (\PDOException $e) {
+            echo $e->getMessage();
+        }
         return $this->_db;
     }
 }
