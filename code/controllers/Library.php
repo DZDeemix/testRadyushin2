@@ -12,7 +12,7 @@
  * PHP version 5
  */
 
-namespace App;
+namespace App\controllers;
 
 use App\models\LibraryModel;
 
