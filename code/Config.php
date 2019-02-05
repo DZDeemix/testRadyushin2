@@ -36,7 +36,8 @@ class Config
             'host' => 'mysql',
             'user' => 'root',
             'password' => 'secret',
-            'db' => 'testRadyushin'
+            'db' => 'testRadyushin',
+            'charset' => 'utf8'
         ];
     }
 }

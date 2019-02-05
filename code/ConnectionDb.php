@@ -15,6 +15,7 @@ namespace App;
 
 use App\Config;
 
+
 /**
  * Class ConnectionDb
  *
@@ -42,22 +43,19 @@ class ConnectionDb
     /**
      * Return connection object
      *
-     * @return \mysqli
+     * @return \PDO
      */
     public function getConnection()
     {
         $config = $this->_config->getConfig();
 
-        $this->_db = @mysqli_connect(
-            $config['host'],
+        $dsn = 'myssql:host=' . $config['host'] . ';dbname=' . $config['db'] . ';charset=' . $config['charset'];
+        $this->_db = new PDO (
+            $dsn,
             $config['user'],
-            $config['password'],
-            $config['db']
+            $config['password']
         ) or die('Ошибка соединения с БД');
-        if (!$this->_db) {
-            die(mysqli_connect_error());
-        }
-        mysqli_set_charset($this->_db, "utf8") or die('Не установлена кодировка');
+
         return $this->_db;
     }
 }
