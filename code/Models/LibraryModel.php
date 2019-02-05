@@ -13,7 +13,6 @@
 
 namespace App\Models;
 
-
 use App\ConnectionDb;
 use App\QueryBulder;
 use PDO;
@@ -33,8 +32,14 @@ class LibraryModel
 {
     public $qb;
     public $mainTable = "books";
-    public $joinTable1 = "authors a on books.author_id = a.id";
-    public $joinTable2 = "genres g on books.genre_id = g.id";
+    public $joinTable1 = <<<Param
+                                authors a on 
+                                books.author_id = a.id
+                            Param;
+    public $joinTable2 = <<<Param
+                                genres g on 
+                                books.genre_id = g.id
+                            Param;
 
     /**
      * LibraryModel constructor.
@@ -45,7 +50,8 @@ class LibraryModel
         $this->qb = new QueryBulder(
             $this->mainTable,
             $this->joinTable1,
-            $this->joinTable2);
+            $this->joinTable2
+        );
     }
 
     /**
@@ -55,7 +61,7 @@ class LibraryModel
      *
      * @return array
      */
-    public function getAutorsByGenre($ganre)
+    public function getAutorsByGenre($ganre) :array
     {
         $this->qb
             ->select("DISTINCT a.name")
@@ -71,10 +77,14 @@ class LibraryModel
      *
      * @return array
      */
-    public function getAutorsByCountBooks()
+    public function getAutorsByCountBooks() :array
     {
         $this->qb
-            ->select("DISTINCT (a.name), count(a.name) as count")
+            ->select(<<<Param
+                            DISTINCT (a.name), 
+                            count(a.name) as count
+                        Param
+            )
             ->from()
             ->innerJoin($this->joinTable1)
             ->groupBy("a.name")
@@ -91,10 +101,15 @@ class LibraryModel
      *
      * @return array
      */
-    public function getAutorsByGenreSortByRating($ganre)
+    public function getAutorsByGenreSortByRating($ganre) :array
     {
         $this->qb
-            ->select("DISTINCT a.name, AVG(books.rating) as rating")
+            ->select(<<<Param
+                        DISTINCT
+                        DISTINCT a.name, 
+                        AVG(books.rating) as rating
+                    Param
+            )
             ->from()
             ->innerJoin()
             ->where("g.name = (:ganre)")
@@ -112,7 +127,7 @@ class LibraryModel
      *
      * @return array
      */
-    public function getSimilarAutor($autor)
+    public function getSimilarAutor($autor) :array
     {
         $this->qb
             ->select("DISTINCT a.name")
@@ -124,15 +139,19 @@ class LibraryModel
                     $this->mainTable,
                     $this->joinTable1,
                     $this->joinTable2
-                    )
+                )
                 )
                     ->select("g.name")
                     ->from()
                     ->innerJoin()
-                    ->where("a.name = (:autor) AND books.genre_id = books.genre_id")
+                    ->where(<<<Param
+                        a.name = (:autor) 
+                        AND books.genre_id = 
+                        books.genre_id
+                        Param
+                    )
             );
 
-        //echo $this->qb->query;
         $stmt = $this->_db->prepare($this->qb->query);
         return $this->execute($stmt, [':autor' => $autor]);
     }
@@ -144,7 +163,7 @@ class LibraryModel
      *
      * @return array
      */
-    public function execute($stmt, $bindParam = null)
+    public function execute($stmt, $bindParam = null) :array
     {
         try {
             $stmt->execute($bindParam);
@@ -154,7 +173,5 @@ class LibraryModel
             echo $e->getMessage();
             die;
         }
-
     }
-
 }

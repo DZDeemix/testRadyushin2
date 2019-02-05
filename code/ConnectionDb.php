@@ -16,7 +16,6 @@ namespace App;
 use App\Config;
 use PDO;
 
-
 /**
  * Class ConnectionDb
  *
@@ -30,15 +29,15 @@ use PDO;
  */
 class ConnectionDb
 {
-    private $_config;
-    private $_db;
+    private $config;
+    private $db;
 
     /**
      * ConnectionDb constructor.
      */
     public function __construct()
     {
-        $this->_config = new Config();
+        $this->config = new Config();
     }
 
     /**
@@ -46,14 +45,14 @@ class ConnectionDb
      *
      * @return \PDO
      */
-    public function getConnection()
+    public function getConnection() :object
     {
-        $config = $this->_config->getConfig();
+        $config = $this->config->getConfig();
 
         $dsn = 'mysql:host=' . $config['host'] . ';dbname=' . $config['db'] . ';charset=' . $config['charset'];
 
         try {
-            $this->_db = new PDO (
+            $this->db = new PDO(
                 $dsn,
                 $config['user'],
                 $config['password']
@@ -61,6 +60,6 @@ class ConnectionDb
         } catch (\PDOException $e) {
             echo $e->getMessage();
         }
-        return $this->_db;
+        return $this->db;
     }
 }

@@ -12,6 +12,7 @@
  */
 
 namespace App;
+
 /**
  * Class Config
  *
@@ -30,7 +31,7 @@ class Config
      *
      * @return array
      */
-    public function getConfig()
+    public function getConfig() :array
     {
         return $config = [
             'host' => 'mysql',

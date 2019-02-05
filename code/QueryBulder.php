@@ -52,7 +52,7 @@ class QueryBulder
      * @param string $param - add to query
      * @return $this
      */
-    public function select(string $param)
+    public function select(string $param) :self
     {
         $this->query = $this->query . "SELECT" . $this->addSpaces($param);
         return $this;
@@ -64,9 +64,9 @@ class QueryBulder
      * @return $this
      */
 
-    public function innerJoin(string $param = "")
+    public function innerJoin(string $param = "") :self
     {
-        if (!empty($param)){
+        if (!empty($param)) {
             $this->query = $this->query . "INNER JOIN" . $this->addSpaces($param);
             return $this;
         }
@@ -77,7 +77,6 @@ class QueryBulder
             if (!empty($this->joinTable2)) {
                 $this->query = $this->query . "INNER JOIN" . $this->addSpaces($this->joinTable2);
             }
-
         }
         return $this;
     }
@@ -87,8 +86,7 @@ class QueryBulder
      * @param string $param - add to query
      * @return $this
      */
-
-    public function where(string $param)
+    public function where(string $param) :self
     {
         $this->query = $this->query . "WHERE" . $this->addSpaces($param);
         return $this;
@@ -99,8 +97,7 @@ class QueryBulder
      * @param string $param - add to query
      * @return $this
      */
-
-    public function groupBy(string $param)
+    public function groupBy(string $param) :self
     {
         $this->query = $this->query . "GROUP BY" . $this->addSpaces($param);
         return $this;
@@ -111,7 +108,7 @@ class QueryBulder
      * @param string $param - add to query
      * @return $this
      */
-    public function orderBy(string $param)
+    public function orderBy(string $param) :self
     {
         $this->query = $this->query . "ORDER BY" . $this->addSpaces($param);
         return $this;
@@ -122,7 +119,7 @@ class QueryBulder
      * @param string $param - add to query
      * @return $this
      */
-    public function from(string $param = "")
+    public function from(string $param = "") :self
     {
         if (!empty($this->mainTable)) {
             $this->query = $this->query . "FROM" . $this->addSpaces($this->mainTable);
@@ -137,7 +134,7 @@ class QueryBulder
      * @param QueryBulder $param
      * @return $this
      */
-    public function exists(QueryBulder $param)
+    public function exists(QueryBulder $param) :self
     {
         $this->query = $this->query . "EXISTS (" . $param->query . ")";
         return $this;
@@ -148,9 +145,8 @@ class QueryBulder
      * @param string $param - parameter for query
      * @return string
      */
-    public function addSpaces(string $param)
+    public function addSpaces(string $param) :string
     {
         return " " . $param . " ";
     }
-
 }

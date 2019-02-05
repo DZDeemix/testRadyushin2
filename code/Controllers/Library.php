@@ -28,14 +28,14 @@ use App\Models\LibraryModel;
  */
 class Library
 {
-    private $_model;
+    private $model;
 
     /**
      * Library constructor.
      */
     public function __construct()
     {
-        $this->_model = new LibraryModel();
+        $this->model = new LibraryModel();
     }
 
     /**
@@ -45,13 +45,16 @@ class Library
      *
      * @return void
      */
-    public function getAutorsByGenre($ganre)
+    public function getAutorsByGenre($ganre) :void
     {
         if (empty($ganre)) {
             echo "Введите название жанра";
             exit;
         }
-        $result = $this->_model->getAutorsByGenre($ganre);
+        $result = $this->model->getAutorsByGenre($ganre);
+
+        //вывод в консоль
+        echo "Autor"  . "\n";
         $this->printArray($result);
     }
 
@@ -60,9 +63,9 @@ class Library
      *
      * @return void
      */
-    public function getAutorsByCountBooks()
+    public function getAutorsByCountBooks() :void
     {
-        $result = $this->_model->getAutorsByCountBooks();
+        $result = $this->model->getAutorsByCountBooks();
 
         //вывод в консоль
         echo "Autor" . "\t" . "\t" . "Count" . "\n";
@@ -76,13 +79,13 @@ class Library
      *
      * @return void
      */
-    public function getAutorsByGenreSortByRating($ganre)
+    public function getAutorsByGenreSortByRating($ganre) :void
     {
         if (empty($ganre)) {
             echo "Введите имя автора";
             exit;
         }
-        $result = $this->_model->getAutorsByGenreSortByRating($ganre);
+        $result = $this->model->getAutorsByGenreSortByRating($ganre);
 
         //вывод в консоль
         echo "Autor" . "\t" . "\t" . "Rating" . "\n";
@@ -96,14 +99,14 @@ class Library
      *
      * @return void
      */
-    public function getSimilarAutor($autor)
+    public function getSimilarAutor($autor) :void
     {
         if (empty($autor)) {
             echo "Введите имя автора \n";
             exit;
         }
 
-        $result = $this->_model->getSimilarAutor($autor);
+        $result = $this->model->getSimilarAutor($autor);
         //вывод в консоль
         echo "Autor" . "\t\t" . "Similar" . "\n";
         $this->printArray($result);
@@ -116,7 +119,7 @@ class Library
      *
      * @return void
      */
-    public function printArray($arr)
+    public function printArray($arr) :void
     {
         foreach ($arr as $item) {
             foreach ($item as $k => $v) {
