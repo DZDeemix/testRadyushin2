@@ -9,7 +9,6 @@
  * @author   Zyablikov Dmitry <zyablikovdmitry@gmail.com>
  * @license  http://www.gnu.org/copyleft/gpl.html GNU General Public License
  * @link     https://github.com/DZDeemix/testRadyushin2
- * PHP version 5
  */
 
 namespace App\Controllers;
@@ -77,13 +76,13 @@ class Library
      *
      * @return void
      */
-    public function getAutorsByGenreSortByRating($autor)
+    public function getAutorsByGenreSortByRating($ganre)
     {
-        if (empty($autor)) {
+        if (empty($ganre)) {
             echo "Введите имя автора";
             exit;
         }
-        $result = $this->_model->getAutorsByGenreSortByRating($autor);
+        $result = $this->_model->getAutorsByGenreSortByRating($ganre);
 
         //вывод в консоль
         echo "Autor" . "\t" . "\t" . "Rating" . "\n";

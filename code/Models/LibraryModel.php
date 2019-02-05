@@ -1,22 +1,51 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: dmitry
- * Date: 05.02.19
- * Time: 14:50
+ * LibraryModel Doc Comment
+ *
+ * LibraryModel queries the database
+ *
+ * @category ConsoleUtils
+ * @package  TestTask
+ * @author   Zyablikov Dmitry <zyablikovdmitry@gmail.com>
+ * @license  http://www.gnu.org/copyleft/gpl.html GNU General Public License
+ * @link     https://github.com/DZDeemix/testRadyushin2
  */
 
 namespace App\Models;
 
 
 use App\ConnectionDb;
+use App\QueryBulder;
 use PDO;
 
+/**
+ * Class LibraryModel
+ *
+ * LibraryModel queries the database
+ *
+ * @category ConsoleUtils
+ * @package  TestTask
+ * @author   Zyablikov Dmitry <zyablikovdmitry@gmail.com>
+ * @license  http://www.gnu.org/copyleft/gpl.html GNU General Public License
+ * @link     https://github.com/DZDeemix/testRadyushin2
+ */
 class LibraryModel
 {
+    public $qb;
+    public $mainTable = "books";
+    public $joinTable1 = "authors a on books.author_id = a.id";
+    public $joinTable2 = "genres g on books.genre_id = g.id";
+
+    /**
+     * LibraryModel constructor.
+     */
     public function __construct()
     {
         $this->_db = (new ConnectionDb())->getConnection();
+        $this->qb = new QueryBulder(
+            $this->mainTable,
+            $this->joinTable1,
+            $this->joinTable2);
     }
 
     /**
@@ -28,13 +57,12 @@ class LibraryModel
      */
     public function getAutorsByGenre($ganre)
     {
-        $query = "SELECT DISTINCT a.name 
-            FROM books 
-            INNER JOIN authors a on books.author_id = a.id 
-            INNER JOIN genres g on books.genre_id = g.id
-            WHERE g.name = (:ganre)";
-
-        $stmt = $this->_db->prepare($query);
+        $this->qb
+            ->select("DISTINCT a.name")
+            ->from()
+            ->innerJoin()
+            ->where("g.name = (:ganre)");
+        $stmt = $this->_db->prepare($this->qb->query);
         return $this->execute($stmt, [':ganre' => $ganre]);
     }
 
@@ -45,13 +73,14 @@ class LibraryModel
      */
     public function getAutorsByCountBooks()
     {
-        $query = "SELECT distinct (a.name), count(a.name) as count 
-            FROM books b 
-            INNER JOIN authors a on b.author_id = a.id
-            GROUP BY a.name
-            ORDER BY count DESC";
+        $this->qb
+            ->select("DISTINCT (a.name), count(a.name) as count")
+            ->from()
+            ->innerJoin($this->joinTable1)
+            ->groupBy("a.name")
+            ->orderBy("count DESC");
 
-        $stmt = $this->_db->prepare($query);
+        $stmt = $this->_db->prepare($this->qb->query);
         return $this->execute($stmt);
     }
 
@@ -62,18 +91,18 @@ class LibraryModel
      *
      * @return array
      */
-    public function getAutorsByGenreSortByRating($autor)
+    public function getAutorsByGenreSortByRating($ganre)
     {
-        $query = "SELECT DISTINCT a.name, AVG(books.rating) as rating 
-            FROM books 
-            INNER JOIN authors a on books.author_id = a.id 
-            INNER JOIN genres g on books.genre_id = g.id
-            WHERE g.name = (:autor)
-            GROUP BY a.name
-            ORDER BY rating DESC";
+        $this->qb
+            ->select("DISTINCT a.name, AVG(books.rating) as rating")
+            ->from()
+            ->innerJoin()
+            ->where("g.name = (:ganre)")
+            ->groupBy("a.name")
+            ->orderBy("rating DESC");
 
-        $stmt = $this->_db->prepare($query);
-        return $this->execute($stmt, [':autor' => $autor]);
+        $stmt = $this->_db->prepare($this->qb->query);
+        return $this->execute($stmt, [':ganre' => $ganre]);
     }
 
     /**
@@ -85,28 +114,37 @@ class LibraryModel
      */
     public function getSimilarAutor($autor)
     {
-        $query = "SELECT DISTINCT a.name FROM books 
-            INNER JOIN authors a on books.author_id = a.id 
-            INNER JOIN genres g on books.genre_id = g.id
-            WHERE NOT a.name = (:autor) AND 
-            EXISTS (
-                SELECT g.name FROM books as b 
-                INNER JOIN authors a on b.author_id = a.id 
-                INNER JOIN genres g on b.genre_id = g.id
-                WHERE a.name = (:autor) AND books.genre_id = b.genre_id
-            )";
-        $stmt = $this->_db->prepare($query);
+        $this->qb
+            ->select("DISTINCT a.name")
+            ->from()
+            ->innerJoin()
+            ->where("NOT a.name = (:autor) AND")
+            ->exists(
+                (new QueryBulder(
+                    $this->mainTable,
+                    $this->joinTable1,
+                    $this->joinTable2
+                    )
+                )
+                    ->select("g.name")
+                    ->from()
+                    ->innerJoin()
+                    ->where("a.name = (:autor) AND books.genre_id = books.genre_id")
+            );
+
+        //echo $this->qb->query;
+        $stmt = $this->_db->prepare($this->qb->query);
         return $this->execute($stmt, [':autor' => $autor]);
     }
 
     /**
-     * Execute from database
+     * Queries the database
      *
      * @param object $stmt - sort data from db
      *
      * @return array
      */
-    public function execute($stmt, $bindParam)
+    public function execute($stmt, $bindParam = null)
     {
         try {
             $stmt->execute($bindParam);
