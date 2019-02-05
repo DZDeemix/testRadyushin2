@@ -6,7 +6,7 @@
  * Time: 14:50
  */
 
-namespace App\models;
+namespace App\Models;
 
 
 use App\ConnectionDb;
@@ -35,8 +35,7 @@ class LibraryModel
             WHERE g.name = (:ganre)";
 
         $stmt = $this->_db->prepare($query);
-        $stmt->bindParam(':ganre', $ganre, PDO::PARAM_STR);
-        return $this->execute($stmt);
+        return $this->execute($stmt, [':ganre' => $ganre]);
     }
 
     /**
@@ -74,8 +73,7 @@ class LibraryModel
             ORDER BY rating DESC";
 
         $stmt = $this->_db->prepare($query);
-        $stmt->bindParam(':autor', $autor, PDO::PARAM_STR);
-        return $this->execute($stmt);
+        return $this->execute($stmt, [':autor' => $autor]);
     }
 
     /**
@@ -98,8 +96,7 @@ class LibraryModel
                 WHERE a.name = (:autor) AND books.genre_id = b.genre_id
             )";
         $stmt = $this->_db->prepare($query);
-        $stmt->bindParam(':autor', $autor, PDO::PARAM_STR);
-        return $this->execute($stmt);
+        return $this->execute($stmt, [':autor' => $autor]);
     }
 
     /**
@@ -109,10 +106,10 @@ class LibraryModel
      *
      * @return array
      */
-    public function execute($stmt)
+    public function execute($stmt, $bindParam)
     {
         try {
-            $stmt->execute();
+            $stmt->execute($bindParam);
             $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
             return $result;
         } catch (\PDOException $e) {
